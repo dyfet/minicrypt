@@ -1,0 +1,53 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
+
+cmake_minimum_required(VERSION 3.16.0)
+Project(minicrypt VERSION 0.0.1 LANGUAGES C)
+set(CMAKE_C_STANDARD 11)
+set(C_STANDARD_REQUIRED 11)
+
+file(
+    GLOB LINT_SOURCES
+    RELATIVE ${PROJECT_SOURCE_DIR}
+    src/*.h src/*.c)
+
+include(cmake/custom.cmake OPTIONAL)
+include(cmake/project.cmake)
+include(cmake/features.cmake)
+include(cmake/clint.cmake)
+include(cmake/deploy.cmake OPTIONAL)
+
+file(GLOB optional .git[a-z]* *.json *.in *.yml .clang* cmake/*)
+file(GLOB headers src/*.h)
+file(GLOB sources src/*.c)
+file(GLOB markdown *.md)
+
+configure_file(minicrypt.pc.in minicrypt.pc)
+enable_testing()
+
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+add_library(minicrypt ${sources} ${headers})
+
+add_executable(test_sha256 test/sha256.c src/sha256.h)
+add_test(NAME test-sha256 COMMAND test_sha256)
+target_link_libraries(test_sha256 PRIVATE minicrypt)
+
+add_executable(test_md5 test/md5.c src/md5.h)
+add_test(NAME test-md5 COMMAND test_md5)
+target_link_libraries(test_md5 PRIVATE minicrypt)
+
+# Extras...
+add_custom_target(header-files SOURCES ${headers})
+add_custom_target(support-files SOURCES ${markdown} ${optional})
+
+install(FILES ${headers} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/minicrypt")
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/minicrypt.pc DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig")
+
+install(TARGETS minicrypt
+    EXPORT minicryptTargets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/minicrypt
+)
+

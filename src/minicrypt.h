@@ -1,0 +1,21 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
+
+#ifndef MINICRYPT_UTILS_H
+#define MINICRYPT_UTILS_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stdint.h>
+#include <string.h>
+#include <stddef.h>
+
+void *minicrypt_memset(void *ptr, int value, size_t size);
+void minicrypt_memcpy(void *outp, const void *inp, size_t len);
+
+#ifdef __cplusplus
+}
+#endif
+#endif

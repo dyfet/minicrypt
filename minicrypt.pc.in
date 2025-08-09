@@ -1,0 +1,7 @@
+prefix=${CMAKE_INSTALL_PREFIX}
+includedir=${CMAKE_INSTALL_FULL_INCLUDEDIR}
+
+Name: minicrypt
+Description: Simple C11 portable legacy encryption code
+Version: ${PROJECT_VERSION}
+

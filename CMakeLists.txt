@@ -2,7 +2,7 @@
 # Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 cmake_minimum_required(VERSION 3.16.0)
-Project(minicrypt VERSION 0.0.1 LANGUAGES C)
+Project(minicrypt VERSION 0.1.0 LANGUAGES C)
 set(CMAKE_C_STANDARD 11)
 set(C_STANDARD_REQUIRED 11)
 
@@ -27,6 +27,12 @@ enable_testing()
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 add_library(minicrypt ${sources} ${headers})
+if(BUILD_SHARED_LIBS AND CMAKE_BUILD_TYPE MATCHES "^Rel")
+    set_target_properties(minicrypt PROPERTIES
+        VERSION ${PROJECT_VERSION}
+        SOVERSION ${PROJECT_VERSION_MAJOR}
+    )
+endif()
 
 add_executable(test_sha256 test/sha256.c src/sha256.h)
 add_test(NAME test-sha256 COMMAND test_sha256)
@@ -35,6 +41,10 @@ target_link_libraries(test_sha256 PRIVATE minicrypt)
 add_executable(test_md5 test/md5.c src/md5.h)
 add_test(NAME test-md5 COMMAND test_md5)
 target_link_libraries(test_md5 PRIVATE minicrypt)
+
+add_executable(test_random test/random.c src/random.h)
+add_test(NAME test-random COMMAND test_random)
+target_link_libraries(test_random PRIVATE minicrypt)
 
 # Extras...
 add_custom_target(header-files SOURCES ${headers})
@@ -47,7 +57,14 @@ install(TARGETS minicrypt
     EXPORT minicryptTargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/minicrypt
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/minicrypt
+)
+
+install(EXPORT minicryptTargets
+    FILE minicryptTargets.cmake
+    NAMESPACE minicrypt::
+    DESTINATION lib/cmake/minicrypt
 )
 

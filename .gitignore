@@ -22,11 +22,13 @@ config.h
 cmake_*.cmake
 Makefile
 CMakeCache.txt
+install_manifest.txt
 
 core
 *.a
 *.pc
 *.so
+*.so.*
 *.gcov
 *.tar.gz
 *.core

@@ -1,7 +1,10 @@
 prefix=${CMAKE_INSTALL_PREFIX}
 includedir=${CMAKE_INSTALL_FULL_INCLUDEDIR}
+libdir=@CMAKE_INSTALL_FULL_LIBDIR@
 
 Name: minicrypt
 Description: Simple C11 portable legacy encryption code
 Version: ${PROJECT_VERSION}
+Libs: -L${CMAKE_INSTALL_FULL_LIBDIR} -llibminicrypt
+Cflags: -I${CMAKE_INSTALL_FULL_INCLUDEDIR}
 

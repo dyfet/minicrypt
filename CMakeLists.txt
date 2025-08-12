@@ -2,7 +2,7 @@
 # Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 cmake_minimum_required(VERSION 3.16.0)
-Project(minicrypt VERSION 0.1.0 LANGUAGES C)
+Project(minicrypt VERSION 0.1.1 LANGUAGES C)
 set(CMAKE_C_STANDARD 11)
 set(C_STANDARD_REQUIRED 11)
 
@@ -45,6 +45,10 @@ target_link_libraries(test_md5 PRIVATE minicrypt)
 add_executable(test_random test/random.c src/random.h)
 add_test(NAME test-random COMMAND test_random)
 target_link_libraries(test_random PRIVATE minicrypt)
+
+add_executable(test_crc test/crc.c src/crc.h)
+add_test(NAME test-crc COMMAND test_crc)
+target_link_libraries(test_crc PRIVATE minicrypt)
 
 # Extras...
 add_custom_target(header-files SOURCES ${headers})

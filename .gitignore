@@ -3,16 +3,14 @@ CPack*
 CMakeDoxy*
 CMakeFiles/
 CMakeScripts/
+CMakeUserPresets.json
 CMakeSettings.json
 Testing/
 build/
 out/
-.vs*/
-
-compile_commands.json
+.vs/
 .cmake
 .clangd
-
 .ninja*
 *.ninja
 *.user.*
@@ -23,6 +21,7 @@ cmake_*.cmake
 Makefile
 CMakeCache.txt
 install_manifest.txt
+compile_commands.json
 
 core
 *.a

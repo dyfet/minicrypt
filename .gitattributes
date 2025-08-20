@@ -1,5 +1,6 @@
 *           text eol=lf
 
+CMakePresets.json export-ignore
 cmake/deploy.cmake export-ignore
 vcpkg.json export-ignore
 .woodpecker.yml export-ignore

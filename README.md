@@ -1,7 +1,7 @@
 # About minicrypt
 
 This package will offer portable versions of common, old, and legacy crypto
-functions that are being depricated and removed from crypto libraries. This
+functions that are being deprecated and removed from crypto libraries. This
 is being done in C to enable supporting legacy devices that may exist in the
 field (such as VoIP phones) that may still be in active use.
 
@@ -9,7 +9,7 @@ These crypto functions may not be optimized, but they are meant for portability
 and ease of use. This includes being able to reliably build endian neutral
 functions. There is a linkable library built for efficiency, but it has a very
 small footprint and each crypto function is made stand-alone. The goal is to
-keep minicrypt small, simple, safe, and convient to use.
+keep minicrypt small, simple, safe, and convenient to use.
 
 Minicrypt requires CMake and any modern C compiler to build it. There should be
 no dependencies outside the libc standard library. Minicrypt  should build and

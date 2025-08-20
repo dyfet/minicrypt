@@ -12,7 +12,7 @@ extern "C" {
 #include <stddef.h>
 
 // While technically not really cryptographic hashing, this seemed an
-// interesting  place to stick some old and existing crc implimentations.
+// interesting  place to stick some old and existing crc implementations.
 
 uint16_t mc_crc16(const uint8_t *data, size_t size);
 uint32_t mc_crc32(const uint8_t *data, size_t size);

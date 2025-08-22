@@ -6,8 +6,8 @@
       "displayName": "Linux Debug",
       "description": "Target the Windows Subsystem for Linux (WSL) or a remote Linux system.",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "installDir": "${sourceDir}/out/install/${presetName}",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "installDir": "${sourceDir}/build/install/${presetName}",
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
       "condition": {
         "type": "equals",
@@ -21,8 +21,8 @@
       "displayName": "macOS Debug",
       "description": "Target a remote macOS system.",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "installDir": "${sourceDir}/out/install/${presetName}",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "installDir": "${sourceDir}/build/install/${presetName}",
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
       "condition": {
         "type": "equals",

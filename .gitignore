@@ -7,7 +7,7 @@ CMakeUserPresets.json
 CMakeSettings.json
 Testing/
 build/
-out/
+
 .vs/
 .cmake
 .clangd
@@ -15,7 +15,6 @@ out/
 *.ninja
 *.user.*
 *.user
-
 config.h
 cmake_*.cmake
 Makefile

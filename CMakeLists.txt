@@ -2,7 +2,7 @@
 # Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 cmake_minimum_required(VERSION 3.16.0)
-Project(minicrypt VERSION 0.1.2 LANGUAGES C)
+Project(minicrypt VERSION 0.1.3 LANGUAGES C)
 set(CMAKE_C_STANDARD 11)
 set(C_STANDARD_REQUIRED 11)
 
@@ -22,6 +22,10 @@ file(GLOB headers src/*.h)
 file(GLOB sources src/*.c)
 file(GLOB markdown *.md)
 
+if(WIN32)
+    set(EXTRA_LINK_LIBS "-ladvapi32")
+endif()
+
 configure_file(minicrypt.pc.in minicrypt.pc)
 enable_testing()
 
@@ -32,6 +36,10 @@ if(BUILD_SHARED_LIBS AND CMAKE_BUILD_TYPE MATCHES "^Rel")
         VERSION ${PROJECT_VERSION}
         SOVERSION ${PROJECT_VERSION_MAJOR}
     )
+endif()
+
+if(WIN32)
+    target_link_libraries(minicrypt PUBLIC advapi32)
 endif()
 
 add_executable(test_sha256 test/sha256.c src/sha256.h)

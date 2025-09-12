@@ -20,16 +20,15 @@ static void store_be32(uint8_t *p, uint32_t x) {
 }
 
 static const uint32_t sha1_initial_state[5] = {
-    0x67452301, 0xEFCDAB89,
-    0x98BADCFE, 0x10325476,
-    0xC3D2E1F0
-};
+0x67452301, 0xEFCDAB89,
+0x98BADCFE, 0x10325476,
+0xC3D2E1F0};
 
 static const uint32_t K[4] = {
-    0x5A827999, // rounds 0–19
-    0x6ED9EBA1, // rounds 20–39
-    0x8F1BBCDC, // rounds 40–59
-    0xCA62C1D6  // rounds 60–79
+0x5A827999, // rounds 0–19
+0x6ED9EBA1, // rounds 20–39
+0x8F1BBCDC, // rounds 40–59
+0xCA62C1D6  // rounds 60–79
 };
 
 static inline uint32_t rotl(uint32_t x, uint32_t n) {
@@ -127,4 +126,3 @@ int mc_sha1_final(mc_sha1_ctx *ctx, uint8_t *out) {
     minicrypt_memset(ctx, 0, sizeof(mc_sha1_ctx));
     return 0;
 }
-

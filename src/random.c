@@ -61,4 +61,3 @@ uint64_t mc_uniform_random(mc_random_ctx *ctx, uint64_t min, uint64_t max) {
     } while (value >= limit);
     return min + (value % range);
 }
-

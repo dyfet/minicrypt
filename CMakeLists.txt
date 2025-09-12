@@ -50,6 +50,10 @@ add_executable(test_sha256 test/sha256.c src/sha256.h)
 add_test(NAME test-sha256 COMMAND test_sha256)
 target_link_libraries(test_sha256 PRIVATE minicrypt)
 
+add_executable(test_hmac test/hmac.c src/hmac.h)
+add_test(NAME test-hmac COMMAND test_hmac)
+target_link_libraries(test_hmac PRIVATE minicrypt)
+
 add_executable(test_md5 test/md5.c src/md5.h)
 add_test(NAME test-md5 COMMAND test_md5)
 target_link_libraries(test_md5 PRIVATE minicrypt)

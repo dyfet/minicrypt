@@ -2,7 +2,7 @@
 # Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 cmake_minimum_required(VERSION 3.16.0)
-Project(minicrypt VERSION 0.1.3 LANGUAGES C)
+Project(minicrypt VERSION 0.1.4 LANGUAGES C)
 set(CMAKE_C_STANDARD 11)
 set(C_STANDARD_REQUIRED 11)
 
@@ -41,6 +41,10 @@ endif()
 if(WIN32)
     target_link_libraries(minicrypt PUBLIC advapi32)
 endif()
+
+add_executable(test_sha1 test/sha1.c src/sha1.h)
+add_test(NAME test-sha1 COMMAND test_sha1)
+target_link_libraries(test_sha1 PRIVATE minicrypt)
 
 add_executable(test_sha256 test/sha256.c src/sha256.h)
 add_test(NAME test-sha256 COMMAND test_sha256)

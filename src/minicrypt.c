@@ -20,3 +20,11 @@ void minicrypt_memcpy(void *outp, const void *inp, size_t len) {
     for (i = 0; i < len; i++)
         out[i] = in[i];
 }
+
+uint64_t minicrypt_keyvalue(uint8_t *digest) {
+    uint64_t result = 0;
+    for (unsigned i = 0; i < sizeof(result); ++i) {
+        result = (result << 8) | digest[i];
+    }
+    return result;
+}

@@ -23,6 +23,7 @@ typedef struct {
 void mc_md5_init(mc_md5_ctx *md);
 int mc_md5_update(mc_md5_ctx *md, const uint8_t *input, uint32_t size);
 int mc_md5_final(mc_md5_ctx *md, uint8_t *out);
+int mc_md5_digest(const void *data, size_t size, uint8_t *out, uint8_t *salt);
 
 #ifdef __cplusplus
 }

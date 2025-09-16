@@ -158,3 +158,12 @@ int mc_sha256_final(mc_sha256_ctx *ctx, uint8_t *out) {
     minicrypt_memset(ctx, 0, sizeof(mc_sha256_ctx));
     return 0;
 }
+
+int mc_sha256_digest(const void *data, size_t size, uint8_t *out, uint8_t *salt) {
+    mc_sha256_ctx ctx;
+    mc_sha256_init(&ctx);
+    if (salt)
+        mc_sha256_update(&ctx, salt, 16);
+    mc_sha256_update(&ctx, data, size);
+    return mc_sha256_final(&ctx, out);
+}

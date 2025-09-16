@@ -24,6 +24,7 @@ typedef struct {
 void mc_sha256_init(mc_sha256_ctx *md);
 int mc_sha256_update(mc_sha256_ctx *md, const uint8_t *in, size_t inlen);
 int mc_sha256_final(mc_sha256_ctx *md, uint8_t *out);
+int mc_sha256_digest(const void *data, size_t size, uint8_t *out, uint8_t *salt);
 
 #ifdef __cplusplus
 }

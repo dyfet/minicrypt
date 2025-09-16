@@ -200,3 +200,12 @@ int mc_md5_final(mc_md5_ctx *ctx, uint8_t *out) {
     minicrypt_memset(ctx, 0, sizeof(mc_md5_ctx));
     return 0;
 }
+
+int mc_md5_digest(const void *data, size_t size, uint8_t *out, uint8_t *salt) {
+    mc_md5_ctx ctx;
+    mc_md5_init(&ctx);
+    if (salt)
+        mc_md5_update(&ctx, salt, 16);
+    mc_md5_update(&ctx, data, size);
+    return mc_md5_final(&ctx, out);
+}

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
-#ifndef MINICRYPT_HMAC256_H
-#define MINICRYPT_HMAC256_H
+#ifndef MINICRYPT_HMAC_H
+#define MINICRYPT_HMAC_H
 
 #include "sha256.h"
 #include "sha1.h"

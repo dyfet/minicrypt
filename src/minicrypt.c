@@ -21,6 +21,15 @@ void minicrypt_memcpy(void *outp, const void *inp, size_t len) {
         out[i] = in[i];
 }
 
+size_t minicrypt_strlen(const char *cp, size_t max) {
+    size_t count = 0;
+    if (!cp) return 0;
+    while (*cp && (++count < max))
+        ++cp;
+    if (*cp) return 0; // invalid or overflow
+    return count;
+}
+
 uint64_t minicrypt_keyvalue(uint8_t *digest) {
     uint64_t result = 0;
     for (unsigned i = 0; i < sizeof(result); ++i) {

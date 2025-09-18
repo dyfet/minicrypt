@@ -27,8 +27,8 @@ typedef struct {
 
 bool mc_aes_setup(mc_aes_ctx *ctx, uint8_t *key, mc_aes_keysize_t size);
 void mc_aes_clear(mc_aes_ctx *ctx);
-void mc_aes_encrypt(mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out);
-void mc_aes_decrypt(mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out);
+void mc_aes_encrypt(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out);
+void mc_aes_decrypt(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out);
 
 #ifdef __cplusplus
 }

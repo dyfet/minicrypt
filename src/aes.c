@@ -238,7 +238,7 @@ void mc_aes_clear(mc_aes_ctx *ctx) {
         memset(ctx, 0, sizeof(mc_aes_ctx));
 }
 
-void mc_aes_encrypt(mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out) {
+void mc_aes_encrypt(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out) {
     if (!ctx || !ctx->rounds) return;
     uint8_t state[16];
     memcpy(state, in, 16);
@@ -256,7 +256,7 @@ void mc_aes_encrypt(mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out) {
     minicrypt_memcpy(out, state, 16);
 }
 
-void mc_aes_decrypt(mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out) {
+void mc_aes_decrypt(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out) {
     if (!ctx || !ctx->rounds) return;
     uint8_t state[16];
     memcpy(state, in, 16);

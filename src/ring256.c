@@ -35,6 +35,7 @@ void mc_ring256_free(mc_ring256_ctx *ctx) {
         mc_ring256_item *item = ctx->index[i];
         while (item) {
             mc_ring256_item *next = item->next;
+            minicrypt_memset(item, 0, sizeof(mc_ring256_item));
             free(item);
             item = next;
         }
@@ -52,12 +53,12 @@ bool mc_ring256_insert(mc_ring256_ctx *ctx, const char *host) {
         size_t vsize = minicrypt_strlen(buf, sizeof(buf));
         if (!vsize) return false;
         mc_sha256_digest(buf, vsize, digest, NULL);
-        uint64_t key = minicrypt_keyvalue(digest);
+        uint8_t path = digest[0];
+        uint64_t key = minicrypt_keyvalue(digest, MC_SHA256_DIGEST_SIZE);
         mc_ring256_item *item = malloc(sizeof(mc_ring256_item) + len);
         item->next = NULL;
         item->key = key;
         minicrypt_memcpy(item->host, host, len + 1);
-        uint8_t path = digest[0];
 
         // make sure we are not overwriting a collision
         mc_ring256_item *dup = ctx->index[path];
@@ -83,12 +84,12 @@ const char *mc_ring256_find(mc_ring256_ctx *ctx, const char *id) {
     size_t len = minicrypt_strlen(id, 256);
     if (!len) return NULL;
     mc_sha256_digest(id, len, digest, NULL);
-    uint64_t key = minicrypt_keyvalue(digest);
+    int path = digest[0];
+    uint64_t key = minicrypt_keyvalue(digest, MC_SHA256_DIGEST_SIZE);
     if (key <= ctx->lowest->key || key > ctx->highest->key)
         return ctx->lowest->host;
 
     // find on current path if possible
-    int path = digest[0];
     mc_ring256_item *low = NULL, *item = ctx->index[path];
     while (item) {
         if (item->key >= key) {
@@ -124,8 +125,8 @@ bool mc_ring256_remove(mc_ring256_ctx *ctx, const char *host) {
         size_t vsize = minicrypt_strlen(buf, sizeof(buf));
         if (!vsize) return false;
         mc_sha256_digest(buf, vsize, digest, NULL);
-        uint64_t key = minicrypt_keyvalue(digest);
         uint8_t path = digest[0];
+        uint64_t key = minicrypt_keyvalue(digest, MC_SHA256_DIGEST_SIZE);
         mc_ring256_item *item = ctx->index[path], *prior = NULL;
         while (item != NULL) {
             if (item->key == key) {

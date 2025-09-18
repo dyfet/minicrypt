@@ -15,7 +15,7 @@ extern "C" {
 void *minicrypt_memset(void *ptr, int value, size_t size);
 void minicrypt_memcpy(void *outp, const void *inp, size_t len);
 size_t minicrypt_strlen(const char *cp, size_t max);
-uint64_t minicrypt_keyvalue(uint8_t *digest);
+uint64_t minicrypt_keyvalue(uint8_t *digest, size_t size);
 
 #ifdef __cplusplus
 }

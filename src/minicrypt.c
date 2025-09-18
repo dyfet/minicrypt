@@ -30,10 +30,11 @@ size_t minicrypt_strlen(const char *cp, size_t max) {
     return count;
 }
 
-uint64_t minicrypt_keyvalue(uint8_t *digest) {
+uint64_t minicrypt_keyvalue(uint8_t *digest, size_t size) {
     uint64_t result = 0;
     for (unsigned i = 0; i < sizeof(result); ++i) {
         result = (result << 8) | digest[i];
     }
+    minicrypt_memset(digest, 0, size);
     return result;
 }

@@ -194,7 +194,7 @@ static void inv_mix_columns(uint8_t state[16]) {
     }
 }
 
-bool mc_aes_setup(mc_aes_ctx *ctx, uint8_t *key, mc_aes_keysize_t size) {
+bool mc_aes_setup(mc_aes_ctx *ctx, uint8_t *key, mc_aes_keysize_t size, const uint8_t *iv) {
     if (!ctx || !key) return false;
     int Nk, Nr, i;
     uint32_t temp;
@@ -217,6 +217,8 @@ bool mc_aes_setup(mc_aes_ctx *ctx, uint8_t *key, mc_aes_keysize_t size) {
     }
     ctx->rounds = Nr;
     ctx->keysize = size;
+    if(iv)
+        minicrypt_memcpy(ctx->iv, iv, 16);
     for (i = 0; i < Nk; ++i) {
         ctx->keyrounds[i] = PACK_BE32(&key[4 * i]);
     }
@@ -272,4 +274,36 @@ void mc_aes_decrypt(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out) {
     inv_sub_bytes(state);
     add_round_key(state, &ctx->keyrounds[0]);
     minicrypt_memcpy(out, state, 16);
+}
+
+bool mc_aes_encrypt_cbc(mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out, size_t len) {
+    if (!ctx || !in || !out || len % 16 != 0) return false;
+    uint8_t block[16];
+    const uint8_t *iv = ctx->iv;
+    for (size_t i = 0; i < len; i += 16) {
+        for (int j = 0; j < 16; ++j)
+            block[j] = in[i + j] ^ iv[j];
+
+        mc_aes_encrypt(ctx, block, out + i);
+        iv = out + i;
+    }
+
+    minicrypt_memcpy(ctx->iv, iv, 16);
+    return true;
+}
+
+bool mc_aes_decrypt_cbc(mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out, size_t len) {
+    if (!ctx || !in || !out || len % 16 != 0) return false;
+    uint8_t block[16];
+    const uint8_t *iv = ctx->iv;
+    for (size_t i = 0; i < len; i += 16) {
+        mc_aes_decrypt(ctx, in + i, block);
+        for (int j = 0; j < 16; ++j)
+            out[i + j] = block[j] ^ iv[j];
+
+        iv = in + i;
+    }
+
+    minicrypt_memcpy(ctx->iv, iv, 16);
+    return true;
 }

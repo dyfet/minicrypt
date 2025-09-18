@@ -5,6 +5,8 @@
 #include "minicrypt.h"
 #include <string.h>
 
+#define SALT_SIZE 16
+
 static void sha1_normalize_key(const uint8_t *key, size_t keysize, uint8_t *out) {
     if (keysize > MC_SHA1_BLOCK_SIZE) {
         uint8_t digest[MC_SHA1_DIGEST_SIZE];
@@ -80,4 +82,28 @@ void mc_hmac_sha256(const uint8_t *key, size_t keysize, const uint8_t *data, siz
     mc_sha256_update(&outer, opad, MC_SHA256_BLOCK_SIZE);
     mc_sha256_update(&outer, inner_digest, 32);
     mc_sha256_final(&outer, out);
+}
+
+void mc_hmac256_pbkdf2(const uint8_t *pass, size_t len, const uint8_t *salt, uint32_t rounds, uint8_t *out, size_t size) {
+    uint32_t block_count = (size + 31) / 32;
+    uint8_t U[32], T[32];
+    uint8_t salt_block[SALT_SIZE + 4];
+    for (uint32_t i = 1; i <= block_count; ++i) {
+        minicrypt_memcpy(salt_block, salt, SALT_SIZE);
+        salt_block[SALT_SIZE + 0] = (i >> 24) & 0xff;
+        salt_block[SALT_SIZE + 1] = (i >> 16) & 0xff;
+        salt_block[SALT_SIZE + 2] = (i >> 8) & 0xff;
+        salt_block[SALT_SIZE + 3] = i & 0xff;
+        mc_hmac_sha256(pass, len, salt_block, SALT_SIZE + 4, U);
+        minicrypt_memcpy(T, U, 32);
+        for (uint32_t j = 1; j < rounds; ++j) {
+            mc_hmac_sha256(pass, len, U, 32, U);
+            for (int k = 0; k < 32; ++k)
+                T[k] ^= U[k];
+        }
+
+        size_t offset = (i - 1) * 32;
+        size_t copy = (offset + 32 > size) ? size - offset : 32;
+        minicrypt_memcpy(out + offset, T, copy);
+    }
 }

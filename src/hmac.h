@@ -13,6 +13,7 @@ extern "C" {
 
 void mc_hmac_sha256(const uint8_t *key, size_t keysize, const uint8_t *data, size_t size, uint8_t *out);
 void mc_hmac_sha1(const uint8_t *key, size_t keysize, const uint8_t *data, size_t size, uint8_t *out);
+void mc_hmac256_pbkdf2(const uint8_t *pass, size_t len, const uint8_t *salt, uint32_t rounds, uint8_t *out, size_t size);
 
 #ifdef __cplusplus
 }

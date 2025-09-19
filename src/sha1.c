@@ -127,7 +127,7 @@ int mc_sha1_final(mc_sha1_ctx *ctx, uint8_t *out) {
     return 0;
 }
 
-int mc_sha1_digest(const void *data, size_t size, uint8_t *out, uint8_t *salt) {
+int mc_sha1_digest(const void *data, size_t size, uint8_t *out, const uint8_t *salt) {
     mc_sha1_ctx ctx;
     mc_sha1_init(&ctx);
     if (salt)

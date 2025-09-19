@@ -49,13 +49,14 @@ bool mc_ring256_insert(mc_ring256_ctx *ctx, const char *host) {
     uint8_t digest[MC_SHA256_DIGEST_SIZE];
     char buf[len + 8];
     for (unsigned i = 0; i < ctx->vnodes; ++i) {
-        snprintf(buf, sizeof(buf), "%s#%d", host, i);
+        snprintf(buf, sizeof(buf), "%s#%u", host, i);
         size_t vsize = minicrypt_strlen(buf, sizeof(buf));
         if (!vsize) return false;
         mc_sha256_digest(buf, vsize, digest, NULL);
         uint8_t path = digest[0];
         uint64_t key = minicrypt_keyvalue(digest, MC_SHA256_DIGEST_SIZE);
         mc_ring256_item *item = malloc(sizeof(mc_ring256_item) + len);
+        if (!item) return false;
         item->next = NULL;
         item->key = key;
         minicrypt_memcpy(item->host, host, len + 1);
@@ -121,7 +122,7 @@ bool mc_ring256_remove(mc_ring256_ctx *ctx, const char *host) {
     char buf[len + 8];
     bool found = false;
     for (unsigned i = 0; i < ctx->vnodes; ++i) {
-        snprintf(buf, sizeof(buf), "%s#%d", host, i);
+        snprintf(buf, sizeof(buf), "%s#%u", host, i);
         size_t vsize = minicrypt_strlen(buf, sizeof(buf));
         if (!vsize) return false;
         mc_sha256_digest(buf, vsize, digest, NULL);

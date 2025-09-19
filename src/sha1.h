@@ -24,7 +24,7 @@ typedef struct {
 void mc_sha1_init(mc_sha1_ctx *md);
 int mc_sha1_update(mc_sha1_ctx *md, const uint8_t *in, size_t inlen);
 int mc_sha1_final(mc_sha1_ctx *md, uint8_t *out);
-int mc_sha1_digest(const void *data, size_t size, uint8_t *out, uint8_t *salt);
+int mc_sha1_digest(const void *data, size_t size, uint8_t *out, const uint8_t *salt);
 
 #ifdef __cplusplus
 }

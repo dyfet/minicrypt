@@ -201,7 +201,7 @@ int mc_md5_final(mc_md5_ctx *ctx, uint8_t *out) {
     return 0;
 }
 
-int mc_md5_digest(const void *data, size_t size, uint8_t *out, uint8_t *salt) {
+int mc_md5_digest(const void *data, size_t size, uint8_t *out, const uint8_t *salt) {
     mc_md5_ctx ctx;
     mc_md5_init(&ctx);
     if (salt)

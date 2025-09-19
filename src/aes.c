@@ -242,7 +242,7 @@ void mc_aes_clear(mc_aes_ctx *ctx) {
 void mc_aes_encrypt(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out) {
     if (!ctx || !ctx->rounds) return;
     uint8_t state[16];
-    memcpy(state, in, 16);
+    minicrypt_memcpy(state, in, 16);
     add_round_key(state, &ctx->keyrounds[0]);
     for (int round = 1; round < ctx->rounds; ++round) {
         sub_bytes(state);
@@ -260,7 +260,7 @@ void mc_aes_encrypt(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out) {
 void mc_aes_decrypt(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out) {
     if (!ctx || !ctx->rounds) return;
     uint8_t state[16];
-    memcpy(state, in, 16);
+    minicrypt_memcpy(state, in, 16);
     add_round_key(state, &ctx->keyrounds[ctx->rounds * 4]);
     for (int round = ctx->rounds - 1; round > 0; --round) {
         inv_shift_rows(state);

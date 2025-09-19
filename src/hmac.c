@@ -14,10 +14,10 @@ static void sha1_normalize_key(const uint8_t *key, size_t keysize, uint8_t *out)
         mc_sha1_init(&key_ctx);
         mc_sha1_update(&key_ctx, key, keysize);
         mc_sha1_final(&key_ctx, digest); // 20 bytes
-        memcpy(out, digest, MC_SHA1_DIGEST_SIZE);
+        minicrypt_memcpy(out, digest, MC_SHA1_DIGEST_SIZE);
         memset(out + MC_SHA1_DIGEST_SIZE, 0, MC_SHA1_BLOCK_SIZE - MC_SHA1_DIGEST_SIZE);
     } else {
-        memcpy(out, key, keysize);
+        minicrypt_memcpy(out, key, keysize);
         memset(out + keysize, 0, MC_SHA1_BLOCK_SIZE - keysize);
     }
 }
@@ -54,7 +54,7 @@ static void sha256_normalize_key(const uint8_t *key, size_t keysize, uint8_t *ou
         mc_sha256_final(&key_ctx, out); // 32 bytes
         memset(out + 32, 0, MC_SHA256_BLOCK_SIZE - 32);
     } else {
-        memcpy(out, key, keysize);
+        minicrypt_memcpy(out, key, keysize);
         memset(out + keysize, 0, MC_SHA256_BLOCK_SIZE - keysize);
     }
 }

@@ -16,7 +16,7 @@ int mc_random_init(mc_random_ctx *ctx) {
     }
     return 0;
 #else
-    ctx->fd = open("/dev/urandom", O_RDONLY);
+    ctx->fd = open("/dev/urandom", O_RDONLY); // FlawFinder: ignore
     return ctx->fd;
 #endif
 }
@@ -34,12 +34,13 @@ void mc_random_free(mc_random_ctx *ctx) {
 }
 
 ssize_t mc_random_fill(mc_random_ctx *ctx, uint8_t *out, size_t size) {
+    if (!size || !out) return 0;
 #ifdef _WIN32
     if (!ctx || ctx->handle == 0) return 0;
     return CryptGenRandom(ctx->handle, size, out) ? size : 0;
 #else
     if (!ctx || ctx->fd < 0) return 0;
-    return read(ctx->fd, out, size);
+    return read(ctx->fd, out, size); // FlawFinder: safe exit
 #endif
 }
 

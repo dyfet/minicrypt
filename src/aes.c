@@ -216,8 +216,13 @@ bool mc_aes_setup(mc_aes_ctx *ctx, uint8_t *key, mc_aes_keysize_t size, const ui
     }
     ctx->rounds = Nr;
     ctx->keysize = size;
-    if (iv)
+    // NOTE: for gcm we will have a distinct gcm setup function
+    if (iv) {
         minicrypt_memcpy(ctx->iv, iv, 16);
+        minicrypt_memcpy(ctx->ctr, iv, 16);
+    } else {
+        minicrypt_memset(ctx->ctr, 0, 16);
+    }
     for (i = 0; i < Nk; ++i) {
         ctx->keyrounds[i] = PACK_BE32(&key[4 * i]);
     }
@@ -304,5 +309,22 @@ bool mc_aes_decrypt_cbc(mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out, size_t
     }
 
     minicrypt_memcpy(ctx->iv, iv, 16);
+    return true;
+}
+
+bool wc_aes_cipher_ctr(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out, size_t len) {
+    uint8_t keystream[16];
+    uint8_t ctr_block[16];
+    minicrypt_memcpy(ctr_block, ctx->ctr, 16);
+    for (size_t i = 0; i < len; i += 16) {
+        mc_aes_encrypt(ctx, ctr_block, keystream); // encrypt counter block
+        size_t block_len = (i + 16 <= len) ? 16 : len - i;
+        for (size_t j = 0; j < block_len; ++j)
+            out[i + j] = in[i + j] ^ keystream[j];
+
+        for (int k = 15; k >= 0; --k) {
+            if (++ctr_block[k]) break;
+        }
+    }
     return true;
 }

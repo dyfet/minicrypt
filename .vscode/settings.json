@@ -3,6 +3,9 @@
     "C_Cpp.default.cStandard": "c17",
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "cSpell.words": [
+        "HCRYPTPROV",
+        "opad",
+        "rcon"
     ],
     "files.exclude": {
         "**/.git": true,

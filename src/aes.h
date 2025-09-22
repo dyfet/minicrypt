@@ -41,6 +41,7 @@ void mc_aes_encrypt(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out);
 void mc_aes_decrypt(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out);
 bool mc_aes_encrypt_cbc(mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out, size_t len);
 bool mc_aes_decrypt_cbc(mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out, size_t len);
+bool wc_aes_cipher_ctr(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out, size_t len);
 
 #ifdef __cplusplus
 }

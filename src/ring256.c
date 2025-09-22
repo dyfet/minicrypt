@@ -69,7 +69,7 @@ bool mc_ring256_insert(mc_ring256_ctx *ctx, const char *host) {
         }
         if (dup) continue;
 
-        // lets inseert a new node
+        // lets insert a new node
         ++ctx->active;
         item->next = ctx->index[path];
         ctx->index[path] = item;

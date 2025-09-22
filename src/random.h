@@ -28,6 +28,7 @@ int mc_random_init(mc_random_ctx *ctx);
 void mc_random_free(mc_random_ctx *ctx);
 ssize_t mc_random_fill(mc_random_ctx *ctx, uint8_t *buf, size_t size);
 uint64_t mc_uniform_random(mc_random_ctx *ctx, uint64_t min, uint64_t max);
+ssize_t mc_make_random(void *data, size_t size);
 
 #ifdef __cplusplus
 }

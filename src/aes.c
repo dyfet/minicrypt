@@ -2,6 +2,7 @@
 // Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 #include "aes.h"
+#include "random.h"
 #include "minicrypt.h"
 
 #define PACK_BE32(p) ((uint32_t)(p)[0] << 24 | (p)[1] << 16 | (p)[2] << 8 | (p)[3])
@@ -222,6 +223,7 @@ bool mc_aes_setup(mc_aes_ctx *ctx, uint8_t *key, mc_aes_keysize_t size, const ui
         minicrypt_memcpy(ctx->ctr, iv, 16);
     } else {
         minicrypt_memset(ctx->ctr, 0, 16);
+        mc_make_random(ctx->iv, 16);
     }
     for (i = 0; i < Nk; ++i) {
         ctx->keyrounds[i] = PACK_BE32(&key[4 * i]);

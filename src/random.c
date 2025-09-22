@@ -62,3 +62,13 @@ uint64_t mc_uniform_random(mc_random_ctx *ctx, uint64_t min, uint64_t max) {
     } while (value >= limit);
     return min + (value % range);
 }
+
+ssize_t mc_make_random(void *data, size_t size) {
+    if (!data || size == 0) return -1;
+    mc_random_ctx ctx;
+    ssize_t rc = mc_random_init(&ctx);
+    if (rc < 0) return rc;
+    rc = mc_random_fill(&ctx, data, size);
+    mc_random_free(&ctx);
+    return rc;
+}

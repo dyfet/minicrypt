@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: Apache-2.0
 // Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 #include "ring256.h"
@@ -103,8 +103,12 @@ const char *mc_ring256_find(mc_ring256_ctx *ctx, const char *id) {
         return low->host;
 
     // find next lowest slot...
-    while (++path < 256 && ctx->index[path] == NULL)
-        ;
+    while (path + 1 < 256) {
+        ++path;
+        if (ctx->index[path] != NULL)
+            break;
+    }
+
     if (path > 255) return NULL;
     low = item = ctx->index[path];
     while (item) {

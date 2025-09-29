@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: Apache-2.0
 // Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 #include "md5.h"
@@ -24,10 +24,10 @@
 
 static unsigned char PADDING[64] = {0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-#define F(x, y, z) (((x) & (y)) | ((~x) & (z)))
-#define G(x, y, z) (((x) & (z)) | ((y) & (~z)))
+#define F(x, y, z) (((x) & (y)) | ((~(x)) & (z)))
+#define G(x, y, z) (((x) & (z)) | ((y) & (~(z))))
 #define H(x, y, z) ((x) ^ (y) ^ (z))
-#define I(x, y, z) ((y) ^ ((x) | (~z)))
+#define I(x, y, z) ((y) ^ ((x) | (~(z))))
 
 #define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32 - (n))))
 
@@ -75,7 +75,7 @@ static uint32_t load_le32(const uint8_t *p) {
 
 static void md5_transform(mc_md5_ctx *ctx, const uint8_t *input) {
     uint32_t a = ctx->state[0], b = ctx->state[1], c = ctx->state[2], d = ctx->state[3], x[16];
-    for (int i = 0; i < 16; ++i)
+    for (ptrdiff_t i = 0; i < 16; ++i)
         x[i] = load_le32(&input[i * 4]);
 
     /* Round 1 */
@@ -168,8 +168,11 @@ void mc_md5_init(mc_md5_ctx *ctx) {
 int mc_md5_update(mc_md5_ctx *ctx, const uint8_t *input, uint32_t size) {
     uint32_t i, index, pad;
     index = (uint32_t)((ctx->count[0] >> 3) & 0x3F);
-    if ((ctx->count[0] += ((uint32_t)size << 3)) < ((uint32_t)size << 3))
+    uint32_t added = (uint32_t)size << 3;
+    ctx->count[0] += added;
+    if (ctx->count[0] < added)
         ctx->count[1]++;
+
     ctx->count[1] += ((uint32_t)size >> 29);
     pad = 64 - index;
     if (size >= pad) {
@@ -194,7 +197,7 @@ int mc_md5_final(mc_md5_ctx *ctx, uint8_t *out) {
     pad = (index < 56) ? (56 - index) : (120 - index);
     mc_md5_update(ctx, PADDING, pad);
     mc_md5_update(ctx, bits, 8);
-    for (int i = 0; i < 4; ++i) {
+    for (ptrdiff_t i = 0; i < 4; ++i) {
         store_le32(&out[i * 4], ctx->state[i]);
     }
     minicrypt_memset(ctx, 0, sizeof(mc_md5_ctx));

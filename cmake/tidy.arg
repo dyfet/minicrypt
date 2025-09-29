@@ -1,0 +1,1 @@
+-D_GNU_SOURCE -Isrc -I/usr/local/include -I/usr/pkg/include

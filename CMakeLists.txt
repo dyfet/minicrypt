@@ -1,8 +1,8 @@
-# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: Apache-2.0
 # Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 cmake_minimum_required(VERSION 3.16.0)
-Project(minicrypt VERSION 0.3.3 LANGUAGES C)
+Project(minicrypt VERSION 0.4.0 LANGUAGES C)
 set(CMAKE_C_STANDARD 11)
 set(C_STANDARD_REQUIRED 11)
 

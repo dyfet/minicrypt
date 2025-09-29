@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: Apache-2.0
 // Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 #include "random.h"
@@ -47,7 +47,7 @@ ssize_t mc_random_fill(mc_random_ctx *ctx, uint8_t *out, size_t size) {
 #define MAX_UINT54 ((1ULL << 54) - 1)
 
 static uint64_t get_random_uint54(mc_random_ctx *ctx) {
-    uint64_t value;
+    uint64_t value = 0;
     uint8_t *out = (uint8_t *)&value;
     mc_random_fill(ctx, out, sizeof(value));
     return value & MAX_UINT54;

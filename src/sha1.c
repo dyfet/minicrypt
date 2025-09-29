@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: Apache-2.0
 // Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 #include "sha1.h"
@@ -40,7 +40,7 @@ static void sha1_compress(mc_sha1_ctx *ctx, const uint8_t block[64]) {
     uint32_t a, b, c, d, e;
 
     for (int i = 0; i < 16; ++i) {
-        w[i] = load_be32(block + i * 4);
+        w[i] = load_be32(block + ((ptrdiff_t)i * 4));
     }
     for (int i = 16; i < 80; ++i) {
         w[i] = rotl(w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16], 1);
@@ -120,7 +120,7 @@ int mc_sha1_final(mc_sha1_ctx *ctx, uint8_t *out) {
 
     mc_sha1_update(ctx, pad, pad_len + 8);
     for (int i = 0; i < 5; ++i) {
-        store_be32(out + i * 4, ctx->state[i]);
+        store_be32(out + ((ptrdiff_t)i * 4), ctx->state[i]);
     }
 
     minicrypt_memset(ctx, 0, sizeof(mc_sha1_ctx));

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: Apache-2.0
 // Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 #include "aes.h"
@@ -156,7 +156,7 @@ static void inv_shift_rows(uint8_t state[16]) {
 }
 
 static void inv_sub_bytes(uint8_t state[16]) {
-    for (int i = 0; i < 16; ++i)
+    for (size_t i = 0; i < 16; ++i)
         state[i] = inv_sbox[state[i]];
 }
 
@@ -165,7 +165,7 @@ static uint8_t xtime(uint8_t x) {
 }
 
 static void mix_columns(uint8_t state[16]) {
-    for (int i = 0; i < 4; ++i) {
+    for (size_t i = 0; i < 4; ++i) {
         uint8_t *col = &state[i * 4];
         uint8_t a = col[0], b = col[1], c = col[2], d = col[3];
         col[0] = xtime(a) ^ xtime(b) ^ b ^ c ^ d;
@@ -185,7 +185,7 @@ static uint8_t mul(uint8_t x, uint8_t y) {
 }
 
 static void inv_mix_columns(uint8_t state[16]) {
-    for (int i = 0; i < 4; ++i) {
+    for (size_t i = 0; i < 4; ++i) {
         uint8_t *col = &state[i * 4];
         uint8_t a = col[0], b = col[1], c = col[2], d = col[3];
         col[0] = mul(a, 0x0E) ^ mul(b, 0x0B) ^ mul(c, 0x0D) ^ mul(d, 0x09);
@@ -197,7 +197,8 @@ static void inv_mix_columns(uint8_t state[16]) {
 
 bool mc_aes_setup(mc_aes_ctx *ctx, uint8_t *key, mc_aes_keysize_t size, const uint8_t *iv) {
     if (!ctx || !key) return false;
-    int Nk, Nr, i;
+    int Nk, Nr;
+    size_t i;
     mc_aes_clear(ctx);
     switch (size) {
     case MC_AES_128:
@@ -225,11 +226,12 @@ bool mc_aes_setup(mc_aes_ctx *ctx, uint8_t *key, mc_aes_keysize_t size, const ui
         minicrypt_memset(ctx->ctr, 0, 16);
         mc_make_random(ctx->iv, 16);
     }
+
     for (i = 0; i < Nk; ++i) {
         ctx->keyrounds[i] = PACK_BE32(&key[4 * i]);
     }
 
-    for (i = Nk; i < 4 * (Nr + 1); ++i) {
+    for (i = Nk; i < ((size_t)4 * (Nr + 1)); ++i) {
         uint32_t temp = ctx->keyrounds[i - 1];
         if (i % Nk == 0) {
             temp = subword(rotl(temp)) ^ (rcon[(i / Nk) - 1] << 24);
@@ -251,7 +253,7 @@ void mc_aes_encrypt(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out) {
     uint8_t state[16];
     minicrypt_memcpy(state, in, 16);
     add_round_key(state, &ctx->keyrounds[0]);
-    for (int round = 1; round < ctx->rounds; ++round) {
+    for (size_t round = 1; round < ctx->rounds; ++round) {
         sub_bytes(state);
         shift_rows(state);
         mix_columns(state);
@@ -260,7 +262,7 @@ void mc_aes_encrypt(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out) {
 
     sub_bytes(state);
     shift_rows(state);
-    add_round_key(state, &ctx->keyrounds[ctx->rounds * 4]);
+    add_round_key(state, &ctx->keyrounds[(size_t)ctx->rounds * 4]);
     minicrypt_memcpy(out, state, 16);
 }
 
@@ -268,8 +270,8 @@ void mc_aes_decrypt(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out) {
     if (!ctx || !ctx->rounds) return;
     uint8_t state[16];
     minicrypt_memcpy(state, in, 16);
-    add_round_key(state, &ctx->keyrounds[ctx->rounds * 4]);
-    for (int round = ctx->rounds - 1; round > 0; --round) {
+    add_round_key(state, &ctx->keyrounds[(size_t)ctx->rounds * 4]);
+    for (size_t round = ctx->rounds - 1; round > 0; --round) {
         inv_shift_rows(state);
         inv_sub_bytes(state);
         add_round_key(state, &ctx->keyrounds[round * 4]);
@@ -300,7 +302,7 @@ bool mc_aes_encrypt_cbc(mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out, size_t
 
 bool mc_aes_decrypt_cbc(mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out, size_t len) {
     if (!ctx || !in || !out || len % 16 != 0) return false;
-    uint8_t block[16];
+    uint8_t block[16] = {0};
     const uint8_t *iv = ctx->iv;
     for (size_t i = 0; i < len; i += 16) {
         mc_aes_decrypt(ctx, in + i, block);
@@ -315,8 +317,8 @@ bool mc_aes_decrypt_cbc(mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out, size_t
 }
 
 bool wc_aes_cipher_ctr(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out, size_t len) {
-    uint8_t keystream[16];
-    uint8_t ctr_block[16];
+    uint8_t keystream[16] = {0};
+    uint8_t ctr_block[16] = {0};
     minicrypt_memcpy(ctr_block, ctx->ctr, 16);
     for (size_t i = 0; i < len; i += 16) {
         mc_aes_encrypt(ctx, ctr_block, keystream); // encrypt counter block

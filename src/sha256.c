@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: Apache-2.0
 // Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 #include "sha256.h"
@@ -76,7 +76,7 @@ static void sha256_compress(mc_sha256_ctx *ctx, const uint8_t block[64]) {
     uint32_t a, b, c, d, e, f, g, h;
 
     for (int i = 0; i < 16; ++i) {
-        w[i] = load_be32(block + i * 4);
+        w[i] = load_be32(block + ((ptrdiff_t)i * 4));
     }
 
     for (int i = 16; i < 64; ++i) {
@@ -154,7 +154,7 @@ int mc_sha256_final(mc_sha256_ctx *ctx, uint8_t *out) {
 
     mc_sha256_update(ctx, pad, pad_len + 8);
     for (int i = 0; i < 8; ++i)
-        store_be32(out + i * 4, ctx->state[i]);
+        store_be32(out + ((ptrdiff_t)i * 4), ctx->state[i]);
     minicrypt_memset(ctx, 0, sizeof(mc_sha256_ctx));
     return 0;
 }

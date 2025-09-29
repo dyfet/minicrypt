@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: Apache-2.0
 // Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 #include "hmac.h"
@@ -88,7 +88,7 @@ void mc_hmac256_pbkdf2(const uint8_t *pass, size_t len, const uint8_t *salt, uin
     uint32_t block_count = (size + 31) / 32;
     uint8_t U[32], T[32];
     uint8_t salt_block[SALT_SIZE + 4];
-    for (uint32_t i = 1; i <= block_count; ++i) {
+    for (size_t i = 1; i <= block_count; ++i) {
         minicrypt_memcpy(salt_block, salt, SALT_SIZE);
         salt_block[SALT_SIZE + 0] = (i >> 24) & 0xff;
         salt_block[SALT_SIZE + 1] = (i >> 16) & 0xff;

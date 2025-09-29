@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: Apache-2.0
 // Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
-#ifndef MINICRYPT_2in5256_H
+#ifndef MINICRYPT_RING256_H
 #define MINICRYPT_RING256_H
 
 #include "sha256.h"

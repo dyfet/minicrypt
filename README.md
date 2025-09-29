@@ -24,6 +24,16 @@ detached tarballs can be used to make packages for many GNU/Linux systems, and
 for BSD ports. They may also be used to build and install the software directly
 on a target platform.
 
+## Licensing
+
+Minicrypt Copyright (C) 2025 David Sugar <tychosoft@gmail.comSug>,
+
+This package has recently been re-licensed as Apache 2.0. It had been licensed
+as GPL 3.0 prior to release 0.4. The net effect for all existing use cases is
+the same, It can be combined with any GPL 3.0 (or later) licensed code
+effectively as GPL 3.0 in a combined work, and it's use with any GPL 2.0 or
+later work effectively makes the combined work GPL 3.0, just like before.
+
 ## Participation
 
 This project is offered as free (as in freedom) software for public use and has

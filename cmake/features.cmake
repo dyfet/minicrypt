@@ -13,12 +13,8 @@ if(WIN32)
         set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
         set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc")
         set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s")
-        set(OPENSSL_USE_STATIC_LIBS TRUE)
     endif()
 endif()
-
-find_package(OpenSSL)
-pkg_check_modules(WOLFSSL wolfssl)
 
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
     set(BUILD_DEBUG true)

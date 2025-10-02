@@ -197,8 +197,7 @@ static void inv_mix_columns(uint8_t state[16]) {
 
 bool mc_aes_setup(mc_aes_ctx *ctx, uint8_t *key, mc_aes_keysize_t size, const uint8_t *iv) {
     if (!ctx || !key) return false;
-    int Nk, Nr;
-    size_t i;
+    size_t Nk, Nr, i;
     mc_aes_clear(ctx);
     switch (size) {
     case MC_AES_128:
@@ -231,7 +230,7 @@ bool mc_aes_setup(mc_aes_ctx *ctx, uint8_t *key, mc_aes_keysize_t size, const ui
         ctx->keyrounds[i] = PACK_BE32(&key[4 * i]);
     }
 
-    for (i = Nk; i < ((size_t)4 * (Nr + 1)); ++i) {
+    for (i = Nk; i < (4 * (Nr + 1)); ++i) {
         uint32_t temp = ctx->keyrounds[i - 1];
         if (i % Nk == 0) {
             temp = subword(rotl(temp)) ^ (rcon[(i / Nk) - 1] << 24);

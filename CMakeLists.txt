@@ -29,7 +29,11 @@ endif()
 configure_file(minicrypt.pc.in minicrypt.pc)
 enable_testing()
 
+if(WIN32)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+else()
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+endif()
 add_library(minicrypt ${sources} ${headers})
 if(BUILD_SHARED_LIBS AND CMAKE_BUILD_TYPE MATCHES "^Rel")
     set_target_properties(minicrypt PROPERTIES

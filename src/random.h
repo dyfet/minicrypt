@@ -9,7 +9,12 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#ifdef _MSC_VER
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#else
 #include <unistd.h>
+#endif
 
 #ifdef _WIN32
 #include <windows.h>

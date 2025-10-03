@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define MC_MAX_RING_ID_SIZE 256
+
 static void ring256_update(mc_ring256_ctx *ctx) {
     ctx->lowest = ctx->highest = NULL;
     if (!ctx->count) return;
@@ -47,7 +49,7 @@ bool mc_ring256_insert(mc_ring256_ctx *ctx, const char *host) {
     size_t len = minicrypt_strlen(host, 256);
     if (!len) return false;
     uint8_t digest[MC_SHA256_DIGEST_SIZE];
-    char buf[len + 8];
+    char buf[MC_MAX_RING_ID_SIZE];
     for (unsigned i = 0; i < ctx->vnodes; ++i) {
         snprintf(buf, sizeof(buf), "%s#%u", host, i);
         size_t vsize = minicrypt_strlen(buf, sizeof(buf));
@@ -116,14 +118,16 @@ const char *mc_ring256_find(mc_ring256_ctx *ctx, const char *id) {
             low = item;
         item = item->next;
     }
-    return low->host;
+    if (low != NULL)
+        return low->host;
+    return NULL;
 }
 
 bool mc_ring256_remove(mc_ring256_ctx *ctx, const char *host) {
     size_t len = minicrypt_strlen(host, 256);
     if (!len) return false;
     uint8_t digest[MC_SHA256_DIGEST_SIZE];
-    char buf[len + 8];
+    char buf[MC_MAX_RING_ID_SIZE];
     bool found = false;
     for (unsigned i = 0; i < ctx->vnodes; ++i) {
         snprintf(buf, sizeof(buf), "%s#%u", host, i);

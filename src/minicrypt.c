@@ -13,9 +13,10 @@ void *minicrypt_memset(void *ptr, int value, size_t size) {
 }
 
 void minicrypt_memcpy(void *outp, const void *inp, size_t len) {
+    if (!outp || !inp || outp == inp || len == 0) return;
     uint8_t *out = (uint8_t *)outp;
     const uint8_t *in = (uint8_t *)inp;
-    if (out == in || !out || !in) return;
+    if ((out > in && out < in + len) || (in > out && in < out + len)) return;
     size_t i;
     for (i = 0; i < len; i++)
         out[i] = in[i];

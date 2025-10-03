@@ -167,24 +167,30 @@ void mc_md5_init(mc_md5_ctx *ctx) {
 
 int mc_md5_update(mc_md5_ctx *ctx, const uint8_t *input, uint32_t size) {
     uint32_t i, index, pad;
-    index = (uint32_t)((ctx->count[0] >> 3) & 0x3F);
-    uint32_t added = (uint32_t)size << 3;
+    index = (ctx->count[0] >> 3) & 0x3F;
+
+    uint32_t added = size << 3;
     ctx->count[0] += added;
     if (ctx->count[0] < added)
         ctx->count[1]++;
-
-    ctx->count[1] += ((uint32_t)size >> 29);
+    ctx->count[1] += size >> 29;
     pad = 64 - index;
     if (size >= pad) {
         minicrypt_memcpy(&ctx->buffer[index], input, pad);
         md5_transform(ctx, ctx->buffer);
-        for (i = pad; i + 63 < size; i += 64)
-            md5_transform(ctx, &input[i]);
+        for (i = pad; i + 63 < size; i += 64) {
+            md5_transform(ctx, &input[i]); // NOLINT(clang-analyzer-security.ArrayBound)
+        }
         index = 0;
     } else {
         i = 0;
     }
-    minicrypt_memcpy(&ctx->buffer[index], &input[i], size - i);
+
+    uint32_t copy_len = size - i;
+    if (copy_len > (64 - index))
+        copy_len = 64 - index;
+
+    minicrypt_memcpy(&ctx->buffer[index], &input[i], copy_len); // NOLINT(clang-analyzer-security.ArrayBound)
     return 0;
 }
 
@@ -207,7 +213,7 @@ int mc_md5_final(mc_md5_ctx *ctx, uint8_t *out) {
 int mc_md5_digest(const void *data, size_t size, uint8_t *out, const uint8_t *salt) {
     mc_md5_ctx ctx;
     mc_md5_init(&ctx);
-    if (salt)
+    if (salt != NULL)
         mc_md5_update(&ctx, salt, 16);
     mc_md5_update(&ctx, data, size);
     return mc_md5_final(&ctx, out);

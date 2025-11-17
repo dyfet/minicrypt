@@ -2,7 +2,7 @@
 // Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 #include "hmac.h"
-#include "minicrypt.h"
+#include "helper.h"
 #include <string.h>
 
 #define SALT_SIZE 16
@@ -14,10 +14,10 @@ static void sha1_normalize_key(const uint8_t *key, size_t keysize, uint8_t *out)
         mc_sha1_init(&key_ctx);
         mc_sha1_update(&key_ctx, key, keysize);
         mc_sha1_final(&key_ctx, digest); // 20 bytes
-        minicrypt_memcpy(out, digest, MC_SHA1_DIGEST_SIZE);
+        mc_memcpy(out, digest, MC_SHA1_DIGEST_SIZE);
         memset(out + MC_SHA1_DIGEST_SIZE, 0, MC_SHA1_BLOCK_SIZE - MC_SHA1_DIGEST_SIZE);
     } else {
-        minicrypt_memcpy(out, key, keysize);
+        mc_memcpy(out, key, keysize);
         memset(out + keysize, 0, MC_SHA1_BLOCK_SIZE - keysize);
     }
 }
@@ -54,7 +54,7 @@ static void sha256_normalize_key(const uint8_t *key, size_t keysize, uint8_t *ou
         mc_sha256_final(&key_ctx, out); // 32 bytes
         memset(out + 32, 0, MC_SHA256_BLOCK_SIZE - 32);
     } else {
-        minicrypt_memcpy(out, key, keysize);
+        mc_memcpy(out, key, keysize);
         memset(out + keysize, 0, MC_SHA256_BLOCK_SIZE - keysize);
     }
 }
@@ -89,13 +89,13 @@ void mc_hmac256_pbkdf2(const uint8_t *pass, size_t len, const uint8_t *salt, uin
     uint8_t U[32], T[32];
     uint8_t salt_block[SALT_SIZE + 4];
     for (size_t i = 1; i <= block_count; ++i) {
-        minicrypt_memcpy(salt_block, salt, SALT_SIZE);
+        mc_memcpy(salt_block, salt, SALT_SIZE);
         salt_block[SALT_SIZE + 0] = (i >> 24) & 0xff;
         salt_block[SALT_SIZE + 1] = (i >> 16) & 0xff;
         salt_block[SALT_SIZE + 2] = (i >> 8) & 0xff;
         salt_block[SALT_SIZE + 3] = i & 0xff;
         mc_hmac_sha256(pass, len, salt_block, SALT_SIZE + 4, U);
-        minicrypt_memcpy(T, U, 32);
+        mc_memcpy(T, U, 32);
         for (uint32_t j = 1; j < rounds; ++j) {
             mc_hmac_sha256(pass, len, U, 32, U);
             for (int k = 0; k < 32; ++k)
@@ -104,6 +104,6 @@ void mc_hmac256_pbkdf2(const uint8_t *pass, size_t len, const uint8_t *salt, uin
 
         size_t offset = (i - 1) * 32;
         size_t copy = (offset + 32 > size) ? size - offset : 32;
-        minicrypt_memcpy(out + offset, T, copy);
+        mc_memcpy(out + offset, T, copy);
     }
 }

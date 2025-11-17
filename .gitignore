@@ -27,6 +27,7 @@ core
 *.pc
 *.so
 *.so.*
+*.idx
 *.gcov
 *.tar.gz
 *.core

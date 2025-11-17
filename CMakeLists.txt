@@ -2,7 +2,7 @@
 # Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 cmake_minimum_required(VERSION 3.16.0)
-Project(minicrypt VERSION 0.4.1 LANGUAGES C)
+Project(minicrypt VERSION 0.5.0 LANGUAGES C)
 set(CMAKE_C_STANDARD 11)
 set(C_STANDARD_REQUIRED 11)
 
@@ -30,10 +30,11 @@ configure_file(minicrypt.pc.in minicrypt.pc)
 enable_testing()
 
 if(WIN32)
-option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+    option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 else()
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+    option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 endif()
+
 add_library(minicrypt ${sources} ${headers})
 if(BUILD_SHARED_LIBS AND CMAKE_BUILD_TYPE MATCHES "^Rel")
     set_target_properties(minicrypt PROPERTIES
@@ -65,10 +66,6 @@ target_link_libraries(test_md5 PRIVATE minicrypt)
 add_executable(test_random test/random.c src/random.h)
 add_test(NAME test-random COMMAND test_random)
 target_link_libraries(test_random PRIVATE minicrypt)
-
-add_executable(test_crc test/crc.c src/crc.h)
-add_test(NAME test-crc COMMAND test_crc)
-target_link_libraries(test_crc PRIVATE minicrypt)
 
 add_executable(test_ring256 test/ring256.c src/ring256.h)
 add_test(NAME test-ring256 COMMAND test_ring256)

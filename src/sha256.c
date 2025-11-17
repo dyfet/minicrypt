@@ -2,7 +2,7 @@
 // Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 #include "sha256.h"
-#include "minicrypt.h"
+#include "helper.h"
 #include <string.h>
 
 static uint32_t load_be32(const uint8_t *p) {
@@ -113,11 +113,11 @@ static void sha256_compress(mc_sha256_ctx *ctx, const uint8_t block[64]) {
     ctx->state[5] += f;
     ctx->state[6] += g;
     ctx->state[7] += h;
-    minicrypt_memset(w, 0, sizeof(w));
+    mc_memset(w, 0, sizeof(w));
 }
 
 void mc_sha256_init(mc_sha256_ctx *ctx) {
-    minicrypt_memcpy(ctx->state, sha256_initial_state, sizeof(sha256_initial_state));
+    mc_memcpy(ctx->state, sha256_initial_state, sizeof(sha256_initial_state));
     ctx->total_len = 0;
     ctx->buffer_len = 0;
 }
@@ -128,7 +128,7 @@ int mc_sha256_update(mc_sha256_ctx *ctx, const uint8_t *in, size_t inlen) {
     while (inlen > 0) {
         size_t space = MC_SHA256_BLOCK_SIZE - ctx->buffer_len;
         size_t to_copy = (inlen < space) ? inlen : space;
-        minicrypt_memcpy(ctx->buffer + ctx->buffer_len, in, to_copy);
+        mc_memcpy(ctx->buffer + ctx->buffer_len, in, to_copy);
         ctx->buffer_len += to_copy;
         in += to_copy;
         inlen -= to_copy;
@@ -155,7 +155,7 @@ int mc_sha256_final(mc_sha256_ctx *ctx, uint8_t *out) {
     mc_sha256_update(ctx, pad, pad_len + 8);
     for (int i = 0; i < 8; ++i)
         store_be32(out + ((ptrdiff_t)i * 4), ctx->state[i]);
-    minicrypt_memset(ctx, 0, sizeof(mc_sha256_ctx));
+    mc_memset(ctx, 0, sizeof(mc_sha256_ctx));
     return 0;
 }
 

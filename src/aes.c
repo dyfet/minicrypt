@@ -3,7 +3,7 @@
 
 #include "aes.h"
 #include "random.h"
-#include "minicrypt.h"
+#include "helper.h"
 
 #define PACK_BE32(p) ((uint32_t)(p)[0] << 24 | (p)[1] << 16 | (p)[2] << 8 | (p)[3])
 
@@ -116,7 +116,7 @@ static void shift_rows(uint8_t state[16]) {
     tmp[7] = state[3];
     tmp[11] = state[7];
     tmp[15] = state[11];
-    minicrypt_memcpy(state, tmp, 16);
+    mc_memcpy(state, tmp, 16);
 }
 
 static void add_round_key(uint8_t state[16], const uint32_t *round_key) {
@@ -152,7 +152,7 @@ static void inv_shift_rows(uint8_t state[16]) {
     tmp[11] = state[15];
     tmp[15] = state[3];
 
-    minicrypt_memcpy(state, tmp, 16);
+    mc_memcpy(state, tmp, 16);
 }
 
 static void inv_sub_bytes(uint8_t state[16]) {
@@ -219,10 +219,10 @@ bool mc_aes_setup(mc_aes_ctx *ctx, uint8_t *key, mc_aes_keysize_t size, const ui
     ctx->keysize = size;
     // NOTE: for gcm we will have a distinct gcm setup function
     if (iv) {
-        minicrypt_memcpy(ctx->iv, iv, 16);
-        minicrypt_memcpy(ctx->ctr, iv, 16);
+        mc_memcpy(ctx->iv, iv, 16);
+        mc_memcpy(ctx->ctr, iv, 16);
     } else {
-        minicrypt_memset(ctx->ctr, 0, 16);
+        mc_memset(ctx->ctr, 0, 16);
         mc_make_random(ctx->iv, 16);
     }
 
@@ -250,7 +250,7 @@ void mc_aes_clear(mc_aes_ctx *ctx) {
 void mc_aes_encrypt(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out) {
     if (!ctx || !ctx->rounds) return;
     uint8_t state[16];
-    minicrypt_memcpy(state, in, 16);
+    mc_memcpy(state, in, 16);
     add_round_key(state, &ctx->keyrounds[0]);
     for (size_t round = 1; round < ctx->rounds; ++round) {
         sub_bytes(state);
@@ -262,13 +262,13 @@ void mc_aes_encrypt(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out) {
     sub_bytes(state);
     shift_rows(state);
     add_round_key(state, &ctx->keyrounds[(size_t)ctx->rounds * 4]);
-    minicrypt_memcpy(out, state, 16);
+    mc_memcpy(out, state, 16);
 }
 
 void mc_aes_decrypt(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out) {
     if (!ctx || !ctx->rounds) return;
     uint8_t state[16];
-    minicrypt_memcpy(state, in, 16);
+    mc_memcpy(state, in, 16);
     add_round_key(state, &ctx->keyrounds[(size_t)ctx->rounds * 4]);
     for (size_t round = ctx->rounds - 1; round > 0; --round) {
         inv_shift_rows(state);
@@ -280,7 +280,7 @@ void mc_aes_decrypt(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out) {
     inv_shift_rows(state);
     inv_sub_bytes(state);
     add_round_key(state, &ctx->keyrounds[0]);
-    minicrypt_memcpy(out, state, 16);
+    mc_memcpy(out, state, 16);
 }
 
 bool mc_aes_encrypt_cbc(mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out, size_t len) {
@@ -295,7 +295,7 @@ bool mc_aes_encrypt_cbc(mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out, size_t
         iv = out + i;
     }
 
-    minicrypt_memcpy(ctx->iv, iv, 16);
+    mc_memcpy(ctx->iv, iv, 16);
     return true;
 }
 
@@ -311,14 +311,14 @@ bool mc_aes_decrypt_cbc(mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out, size_t
         iv = in + i;
     }
 
-    minicrypt_memcpy(ctx->iv, iv, 16);
+    mc_memcpy(ctx->iv, iv, 16);
     return true;
 }
 
 bool wc_aes_cipher_ctr(const mc_aes_ctx *ctx, const uint8_t *in, uint8_t *out, size_t len) {
     uint8_t keystream[16] = {0};
     uint8_t ctr_block[16] = {0};
-    minicrypt_memcpy(ctr_block, ctx->ctr, 16);
+    mc_memcpy(ctr_block, ctx->ctr, 16);
     for (size_t i = 0; i < len; i += 16) {
         mc_aes_encrypt(ctx, ctr_block, keystream); // encrypt counter block
         size_t block_len = (i + 16 <= len) ? 16 : len - i;

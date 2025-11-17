@@ -2,7 +2,7 @@
 // Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 #include "md5.h"
-#include "minicrypt.h"
+#include "helper.h"
 #include <string.h>
 
 #define S11 7
@@ -154,7 +154,7 @@ static void md5_transform(mc_md5_ctx *ctx, const uint8_t *input) {
     ctx->state[1] += b;
     ctx->state[2] += c;
     ctx->state[3] += d;
-    minicrypt_memset(x, 0, sizeof(x));
+    mc_memset(x, 0, sizeof(x));
 }
 
 void mc_md5_init(mc_md5_ctx *ctx) {
@@ -176,7 +176,7 @@ int mc_md5_update(mc_md5_ctx *ctx, const uint8_t *input, uint32_t size) {
     ctx->count[1] += size >> 29;
     pad = 64 - index;
     if (size >= pad) {
-        minicrypt_memcpy(&ctx->buffer[index], input, pad);
+        mc_memcpy(&ctx->buffer[index], input, pad);
         md5_transform(ctx, ctx->buffer);
         for (i = pad; i + 63 < size; i += 64) {
             md5_transform(ctx, &input[i]); // NOLINT(clang-analyzer-security.ArrayBound)
@@ -190,7 +190,7 @@ int mc_md5_update(mc_md5_ctx *ctx, const uint8_t *input, uint32_t size) {
     if (copy_len > (64 - index))
         copy_len = 64 - index;
 
-    minicrypt_memcpy(&ctx->buffer[index], &input[i], copy_len); // NOLINT(clang-analyzer-security.ArrayBound)
+    mc_memcpy(&ctx->buffer[index], &input[i], copy_len); // NOLINT(clang-analyzer-security.ArrayBound)
     return 0;
 }
 
@@ -206,7 +206,7 @@ int mc_md5_final(mc_md5_ctx *ctx, uint8_t *out) {
     for (ptrdiff_t i = 0; i < 4; ++i) {
         store_le32(&out[i * 4], ctx->state[i]);
     }
-    minicrypt_memset(ctx, 0, sizeof(mc_md5_ctx));
+    mc_memset(ctx, 0, sizeof(mc_md5_ctx));
     return 0;
 }
 

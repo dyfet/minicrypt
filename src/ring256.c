@@ -2,7 +2,7 @@
 // Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
 #include "ring256.h"
-#include "minicrypt.h"
+#include "helper.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -28,7 +28,7 @@ static void ring256_update(mc_ring256_ctx *ctx) {
 }
 
 void mc_ring256_init(mc_ring256_ctx *ctx, unsigned vnodes) {
-    minicrypt_memset(ctx, 0, sizeof(mc_ring256_ctx));
+    mc_memset(ctx, 0, sizeof(mc_ring256_ctx));
     ctx->vnodes = vnodes;
 }
 
@@ -37,7 +37,7 @@ void mc_ring256_free(mc_ring256_ctx *ctx) {
         mc_ring256_item *item = ctx->index[i];
         while (item) {
             mc_ring256_item *next = item->next;
-            minicrypt_memset(item, 0, sizeof(mc_ring256_item));
+            mc_memset(item, 0, sizeof(mc_ring256_item));
             free(item);
             item = next;
         }
@@ -46,22 +46,22 @@ void mc_ring256_free(mc_ring256_ctx *ctx) {
 }
 
 bool mc_ring256_insert(mc_ring256_ctx *ctx, const char *host) {
-    size_t len = minicrypt_strlen(host, 256);
+    size_t len = mc_strlen(host, 256);
     if (!len) return false;
     uint8_t digest[MC_SHA256_DIGEST_SIZE];
     char buf[MC_MAX_RING_ID_SIZE];
     for (unsigned i = 0; i < ctx->vnodes; ++i) {
         snprintf(buf, sizeof(buf), "%s#%u", host, i);
-        size_t vsize = minicrypt_strlen(buf, sizeof(buf));
+        size_t vsize = mc_strlen(buf, sizeof(buf));
         if (!vsize) return false;
         mc_sha256_digest(buf, vsize, digest, NULL);
         uint8_t path = digest[0];
-        uint64_t key = minicrypt_keyvalue(digest, MC_SHA256_DIGEST_SIZE);
+        uint64_t key = mc_keyvalue(digest, MC_SHA256_DIGEST_SIZE);
         mc_ring256_item *item = malloc(sizeof(mc_ring256_item) + len);
         if (!item) return false;
         item->next = NULL;
         item->key = key;
-        minicrypt_memcpy(item->host, host, len + 1);
+        mc_memcpy(item->host, host, len + 1);
 
         // make sure we are not overwriting a collision
         mc_ring256_item *dup = ctx->index[path];
@@ -84,11 +84,11 @@ bool mc_ring256_insert(mc_ring256_ctx *ctx, const char *host) {
 const char *mc_ring256_find(mc_ring256_ctx *ctx, const char *id) {
     if (!ctx || !ctx->count) return NULL;
     uint8_t digest[MC_SHA256_DIGEST_SIZE];
-    size_t len = minicrypt_strlen(id, 256);
+    size_t len = mc_strlen(id, 256);
     if (!len) return NULL;
     mc_sha256_digest(id, len, digest, NULL);
     int path = digest[0];
-    uint64_t key = minicrypt_keyvalue(digest, MC_SHA256_DIGEST_SIZE);
+    uint64_t key = mc_keyvalue(digest, MC_SHA256_DIGEST_SIZE);
     if (key <= ctx->lowest->key || key > ctx->highest->key)
         return ctx->lowest->host;
 
@@ -124,18 +124,18 @@ const char *mc_ring256_find(mc_ring256_ctx *ctx, const char *id) {
 }
 
 bool mc_ring256_remove(mc_ring256_ctx *ctx, const char *host) {
-    size_t len = minicrypt_strlen(host, 256);
+    size_t len = mc_strlen(host, 256);
     if (!len) return false;
     uint8_t digest[MC_SHA256_DIGEST_SIZE];
     char buf[MC_MAX_RING_ID_SIZE];
     bool found = false;
     for (unsigned i = 0; i < ctx->vnodes; ++i) {
         snprintf(buf, sizeof(buf), "%s#%u", host, i);
-        size_t vsize = minicrypt_strlen(buf, sizeof(buf));
+        size_t vsize = mc_strlen(buf, sizeof(buf));
         if (!vsize) return false;
         mc_sha256_digest(buf, vsize, digest, NULL);
         uint8_t path = digest[0];
-        uint64_t key = minicrypt_keyvalue(digest, MC_SHA256_DIGEST_SIZE);
+        uint64_t key = mc_keyvalue(digest, MC_SHA256_DIGEST_SIZE);
         mc_ring256_item *item = ctx->index[path], *prior = NULL;
         while (item != NULL) {
             if (item->key == key) {

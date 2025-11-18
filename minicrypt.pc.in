@@ -5,6 +5,6 @@ libdir=@CMAKE_INSTALL_FULL_LIBDIR@
 Name: minicrypt
 Description: Simple C11 portable legacy encryption code
 Version: ${PROJECT_VERSION}
-Libs: -L${CMAKE_INSTALL_FULL_LIBDIR} -lminicrypt ${EXTRA_LINK_LIBS}
+Libs: -L${CMAKE_INSTALL_FULL_LIBDIR} -lminicrypt
 Cflags: -I${CMAKE_INSTALL_FULL_INCLUDEDIR}
 

@@ -1,35 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (C) 2025 David Sugar <tychosoft@gmail.com>
 
-macro(install_exec target new_name)
-    set(_install_dir "${CMAKE_INSTALL_BINDIR}")
-    if(${ARGC} GREATER 2)
-        set(_install_dir "${ARGV2}")
-    endif()
-
-    if(NOT TARGET ${target})
-        message(FATAL_ERROR "Target '${target}' not found")
-    endif()
-
-    if(WIN32)
-        install(
-            FILES "$<TARGET_FILE:${target}>"
-            DESTINATION "${_install_dir}"
-            RENAME "${new_name}"
-        )
-    else()
-        install(
-            FILES "$<TARGET_FILE:${target}>"
-            DESTINATION "${_install_dir}"
-            RENAME "${new_name}"
-            PERMISSIONS
-                OWNER_EXECUTE OWNER_WRITE OWNER_READ
-                GROUP_EXECUTE GROUP_READ
-                WORLD_EXECUTE WORLD_READ
-        )
-    endif()
-endmacro()
-
 string(TOLOWER "${PROJECT_NAME}" PROJECT_ARCHIVE)
 include(GNUInstallDirs)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -39,6 +10,10 @@ if(CMAKE_BUILD_TYPE MATCHES "Debug")
     if(NOT MSVC)
         list(APPEND CMAKE_CXX_FLAGS "-Wall")
     endif()
+endif()
+
+if(MSYS AND NOT WIN32)
+    set(WIN32 TRUE)
 endif()
 
 if(RELEASE AND NOT PROJECT_RELEASE)

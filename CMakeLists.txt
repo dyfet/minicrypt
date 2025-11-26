@@ -22,7 +22,7 @@ file(GLOB headers src/*.h)
 file(GLOB sources src/*.c)
 file(GLOB markdown *.md)
 
-if(WIN32)
+if(WIN32 OR MSYS)
     set(EXTRA_LINK_LIBS "-ladvapi32")
 endif()
 

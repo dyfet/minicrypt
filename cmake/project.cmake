@@ -12,10 +12,6 @@ if(CMAKE_BUILD_TYPE MATCHES "Debug")
     endif()
 endif()
 
-if(MSYS AND NOT WIN32)
-    set(WIN32 TRUE)
-endif()
-
 if(RELEASE AND NOT PROJECT_RELEASE)
     set(PROJECT_RELEASE "${RELEASE}")
 elseif(NOT PROJECT_RELEASE)
